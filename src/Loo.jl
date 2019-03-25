@@ -1,6 +1,6 @@
 module Loo
 
-using Statistics, LinearAlgebra
+using Statistics, LinearAlgebra, Base.Threads
 import Distributions, SortingAlgorithms, StatsFuns
 
 include("fit_pareto.jl")
