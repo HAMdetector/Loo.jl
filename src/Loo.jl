@@ -1,7 +1,11 @@
 module Loo
 
-using Statistics, LinearAlgebra, Base.Threads, StatsBase
+using Statistics, LinearAlgebra, Base.Threads, StatsBase, Requires
 import Distributions, SortingAlgorithms, StatsFuns
+
+function __init__()
+    @require StanInterface = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6" include("stanfit.jl")
+end
 
 include("fit_pareto.jl")
 include("n_eff.jl")
