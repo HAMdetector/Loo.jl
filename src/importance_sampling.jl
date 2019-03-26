@@ -17,7 +17,7 @@ function log_importance_weights!(log_lik::AbstractVector{T};
     log_lik .= -log_lik .- maximum(-log_lik)
     sort_indices = sortperm(log_lik, alg = SortingAlgorithms.TimSort)
 
-    r_eff = ismissing(N_eff) ? 1 : N_eff / length(log_lik)
+    r_eff = ismissing(N_eff) ? 1.0 : N_eff / length(log_lik)
     M = ceil(Int, min(length(log_lik) / 5, 3 * sqrt(length(log_lik) / r_eff)))
 
     largest_weights = @view log_lik[sort_indices[length(log_lik) - M + 1:end]]
@@ -30,7 +30,7 @@ function log_importance_weights!(log_lik::AbstractVector{T};
     return log_lik
 end
 
-function elpd(log_lik::AbstractVector)
+function elpd(log_lik::AbstractVector{<: AbstractVector})
     log_weights = log_importance_weights(log_lik)
 
     return elpd(vcat(log_lik...), log_weights)
@@ -50,7 +50,7 @@ function pointwise_loo(x::AbstractVector{<: AbstractVector})
     elpd = Loo.elpd(x)
     lpd = Loo.lpd(vcat(x...))
 
-    return (elpd = elpd, looic = -2 * elpd, p_loo = lpd - elpd)
+    return (elpd = elpd, lpd = lpd, looic = -2 * elpd, p_loo = lpd - elpd)
 end
 
 function loo(m::AbstractMatrix)
