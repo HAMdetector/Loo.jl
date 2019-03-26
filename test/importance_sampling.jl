@@ -31,6 +31,15 @@ end
     @test julia_elpd ≈ R_loo[:, 1]
 end
 
+@testset "elpd(::AbstractVector{<: AbstractVector})" begin
+    a = example_loglik_array()
+    R_loo = CSV.read(joinpath("data", "example_loo_n_eff.csv"), allowmissing = :none)
+
+    for i in 1:size(a, 3)
+        julia_elpd = Loo.elpd([a[:, 1, i], a[:, 2, i]])
+        @test julia_elpd ≈ R_loo[i, 1] 
+    end
+end
 
 @testset "lpd(::AbstractVector{<: Real})" begin
     m = CSV.read(joinpath("data", "example_loglik_matrix.csv"), header = 0, 

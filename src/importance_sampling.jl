@@ -30,13 +30,13 @@ function log_importance_weights!(log_lik::AbstractVector{T};
     return log_lik
 end
 
-function elpd(log_lik::AbstractVector{T}) where T <: Real
+function elpd(log_lik::AbstractVector)
     log_weights = log_importance_weights(log_lik)
 
-    return elpd(log_lik, log_weights)
+    return elpd(vcat(log_lik...), log_weights)
 end
 
-function elpd(log_lik::AbstractVector{T}, log_weights::AbstractVector{T}) where T <: Real
+function elpd(log_lik::AbstractVector, log_weights::AbstractVector)
     normalized_lw = log_weights .- StatsFuns.logsumexp(log_weights)
     
     return StatsFuns.logsumexp(log_lik .+ normalized_lw)
