@@ -46,6 +46,13 @@ function lpd(log_lik::AbstractVector{T}) where T <: Real
     return StatsFuns.logsumexp(log_lik) - log(length(log_lik))
 end
 
+function pointwise_loo(x::AbstractVector{<: AbstractVector})
+    elpd = Loo.elpd(x)
+    lpd = Loo.lpd(vcat(x...))
+
+    return (elpd = elpd, looic = -2 * elpd, p_loo = lpd - elpd)
+end
+
 function loo(m::AbstractMatrix)
     elpd = Vector{Float64}(undef, size(m, 2))
     lpd = Vector{Float64}(undef, size(m, 2))

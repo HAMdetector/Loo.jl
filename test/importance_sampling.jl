@@ -52,6 +52,18 @@ end
     @test julia_lpd ≈ R_lpd
 end
 
+@testset "pointwise_loo(::AbstractVector{<: AbstractVector})" begin
+    a = example_loglik_array()
+    R_loo = CSV.read(joinpath("data", "example_loo_n_eff.csv"), allowmissing = :none)
+
+    for i in 1:size(a, 3)
+        pointwise = Loo.pointwise_loo([a[:, 1, i], a[:, 2, i]])
+        @test pointwise[1] ≈ R_loo[i, 1]
+        @test pointwise[2] ≈ R_loo[i, 4]
+        @test pointwise[3] ≈ R_loo[i, 3]
+    end
+end
+
 @testset "loo(::AbstractMatrix)" begin
     m = CSV.read(joinpath("data", "example_loglik_matrix.csv"), header = 0, 
             allowmissing = :none)
