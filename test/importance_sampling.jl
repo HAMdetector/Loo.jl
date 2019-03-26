@@ -10,6 +10,17 @@
     end
 end
 
+@testset "log_importance_weights(::AbstractVector{<: AbstractVector{<: Real}})" begin
+    a = example_loglik_array()
+    R_log_weights = CSV.read(joinpath("data", "example_log_weights_n_eff.csv"),
+                             allowmissing = :none)
+    
+    for i in 1:size(a, 3)
+        log_weights = Loo.log_importance_weights([a[:, 1, i], a[:, 2, i]])
+        @test log_weights ≈ R_log_weights[:, i]
+    end
+end
+
 @testset "elpd(::AbstractVector{<: Real}, ::AbstractVector{<: Real}" begin
     m = CSV.read(joinpath("data", "example_loglik_matrix.csv"), header = 0, 
                 allowmissing = :none)

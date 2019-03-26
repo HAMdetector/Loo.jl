@@ -1,19 +1,33 @@
+function log_importance_weights(log_lik::AbstractVector{<: AbstractVector{<: Real}})
+    N_eff = Loo.N_eff([exp.(x) for x in log_lik])
 
-function log_importance_weights(log_lik::AbstractVector{T}) where T <: Real
+    log_importance_weights!(vcat(log_lik...), N_eff = N_eff)
+end
+
+function log_importance_weights(log_lik::AbstractVector{T};
+    N_eff::Union{Missing, <: Real} = missing) where T <: Real
+    
     x = copy(log_lik)
-    x .= -x .- maximum(-x)
-    sort_indices = sortperm(x, alg = SortingAlgorithms.TimSort)
+    log_importance_weights!(x, N_eff = N_eff)
+end
 
-    M = ceil(Int, min(length(x) / 5, 3 * sqrt(length(x))))
+function log_importance_weights!(log_lik::AbstractVector{T};
+    N_eff::Union{Missing, <: Real} = missing) where T <: Real
+    
+    log_lik .= -log_lik .- maximum(-log_lik)
+    sort_indices = sortperm(log_lik, alg = SortingAlgorithms.TimSort)
 
-    largest_weights = @view x[sort_indices[length(x) - M + 1:end]]
-    cutoff = x[sort_indices[length(x) - M]]
+    r_eff = ismissing(N_eff) ? 1 : N_eff / length(log_lik)
+    M = ceil(Int, min(length(log_lik) / 5, 3 * sqrt(length(log_lik) / r_eff)))
+
+    largest_weights = @view log_lik[sort_indices[length(log_lik) - M + 1:end]]
+    cutoff = log_lik[sort_indices[length(log_lik) - M]]
     pareto_fit = fit(Distributions.GeneralizedPareto, exp.(largest_weights) .- exp(cutoff), 
                      sorted = true)
 
     largest_weights .= log.(quantile.(pareto_fit, (((1:M) .- 0.5) / M)) .+ exp(cutoff))
 
-    return x
+    return log_lik
 end
 
 function elpd(log_lik::AbstractVector{T}) where T <: Real
