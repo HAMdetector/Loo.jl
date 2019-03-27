@@ -15,5 +15,5 @@ function loo(sf::StanInterface.Stanfit; log_lik_name = "log_lik")
     elpd = sum(elpd)
     lpd = sum(lpd)
 
-    return (elpd = elpd, looic = -2 * elpd, p_loo = lpd - elpd, k = maximum(k))
+    return LooResult(elpd, lpd, k, (sf.chains * sf.iter, N))
 end

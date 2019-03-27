@@ -1,9 +1,3 @@
-function log_importance_weights(log_lik::AbstractVector{<: AbstractVector{<: Real}})
-    N_eff = Loo.N_eff([exp.(x) for x in log_lik])
-
-    log_importance_weights!(vcat(log_lik...), N_eff = N_eff)
-end
-
 function log_importance_weights(log_lik::AbstractVector{T};
     N_eff::Union{Missing, <: Real} = missing) where T <: Real
     
@@ -47,10 +41,32 @@ function lpd(log_lik::AbstractVector{T}) where T <: Real
 end
 
 function pointwise_loo(x::AbstractVector{<: AbstractVector})
-    k, elpd = Loo.elpd(x)
-    lpd = Loo.lpd(vcat(x...))
+    ll = vcat(x...)
+    N_eff = Loo.N_eff([exp.(v) for v in x])
+    k, lw = log_importance_weights(ll, N_eff = N_eff)
 
+    elpd = Loo.elpd(ll, lw)
+    lpd = Loo.lpd(ll)
+    # var_epd_i = sum((exp.(lw) .^ 2) .* (exp.(ll) .- exp.(elpd)) .^ 2)
+    # sd_epd_i = sqrt(var_epd_i)
+
+    # println(var_epd_i)
+    # println(sd_epd_i)
     return (elpd = elpd, lpd = lpd, looic = -2 * elpd, p_loo = lpd - elpd, k = k)
+end
+
+function pointwise_loo(x::AbstractVector)
+    ll = x
+    k, lw = log_importance_weights(ll)
+
+    elpd = Loo.elpd(ll, lw)
+    lpd = Loo.lpd(ll)
+    var_epd_i = sum((exp.(lw) .^ 2) .* (exp.(ll) .- exp.(elpd)) .^ 2)
+    println("elpd: $elpd")
+    println("lpd: $lpd")
+    println("var_epd_i: $var_epd_i")
+    println("w: $(exp.(lw[1:5]))")
+    println("ll: $(ll[1:5])")
 end
 
 function loo(m::AbstractMatrix)
