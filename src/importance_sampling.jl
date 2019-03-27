@@ -27,13 +27,13 @@ function log_importance_weights!(log_lik::AbstractVector{T};
 
     largest_weights .= log.(quantile.(pareto_fit, (((1:M) .- 0.5) / M)) .+ exp(cutoff))
 
-    return log_lik
+    return pareto_fit.ξ, log_lik
 end
 
-function elpd(log_lik::AbstractVector{<: AbstractVector})
-    log_weights = log_importance_weights(log_lik)
+function elpd(log_lik::AbstractVector)
+    k, log_weights = log_importance_weights(log_lik)
 
-    return elpd(vcat(log_lik...), log_weights)
+    return k, elpd(vcat(log_lik...), log_weights)
 end
 
 function elpd(log_lik::AbstractVector, log_weights::AbstractVector)
@@ -47,10 +47,10 @@ function lpd(log_lik::AbstractVector{T}) where T <: Real
 end
 
 function pointwise_loo(x::AbstractVector{<: AbstractVector})
-    elpd = Loo.elpd(x)
+    k, elpd = Loo.elpd(x)
     lpd = Loo.lpd(vcat(x...))
 
-    return (elpd = elpd, lpd = lpd, looic = -2 * elpd, p_loo = lpd - elpd)
+    return (elpd = elpd, lpd = lpd, looic = -2 * elpd, p_loo = lpd - elpd, k = k)
 end
 
 function loo(m::AbstractMatrix)
@@ -58,7 +58,7 @@ function loo(m::AbstractMatrix)
     lpd = Vector{Float64}(undef, size(m, 2))
 
     @threads for col in 1:size(m, 2)
-        elpd[col] = Loo.elpd(m[:, col])
+        _, elpd[col] = Loo.elpd(m[:, col])
         lpd[col] = Loo.lpd(m[:, col])
     end
 

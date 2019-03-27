@@ -24,6 +24,7 @@ function example_loglik_array()
     return a
 end
 
+include("loo_result.jl")
 include("fit_pareto.jl")
 include("n_eff.jl")
 include("importance_sampling.jl")
