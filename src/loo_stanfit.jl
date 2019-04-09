@@ -5,7 +5,7 @@ function loo(sf::StanInterface.Stanfit; log_lik_name = "log_lik")
     lpd = Vector{Float64}(undef, N)
     k = Vector{Float64}(undef, N)
 
-    @threads for i in 1:N
+    for i in 1:N
         loo = pointwise_loo([x[string(log_lik_name, ".", i)] for x in sf.result])
         elpd[i] = loo[:elpd]
         lpd[i] = loo[:lpd]

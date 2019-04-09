@@ -1,3 +1,9 @@
+function log_importance_weights(log_lik::AbstractVector{<: AbstractVector})
+    N_eff = Loo.N_eff([exp.(v) for v in log_lik])
+
+    log_importance_weights!(vcat(log_lik...), N_eff = N_eff)
+end
+
 function log_importance_weights(log_lik::AbstractVector{T};
     N_eff::Union{Missing, <: Real} = missing) where T <: Real
     
@@ -7,7 +13,6 @@ end
 
 function log_importance_weights!(log_lik::AbstractVector{T};
     N_eff::Union{Missing, <: Real} = missing) where T <: Real
-    
     log_lik .= -log_lik .- maximum(-log_lik)
     sort_indices = sortperm(log_lik, alg = SortingAlgorithms.TimSort)
 
@@ -40,46 +45,41 @@ function lpd(log_lik::AbstractVector{T}) where T <: Real
     return StatsFuns.logsumexp(log_lik) - log(length(log_lik))
 end
 
-function pointwise_loo(x::AbstractVector{<: AbstractVector})
+function pointwise_loo(x::AbstractVector{<:Real})
+    return pointwise_loo(x, sum(length(v) for v in x))
+end
+
+function pointwise_loo(x::AbstractArray{<: AbstractVector})
+    N = N_eff([exp.(v) for v in x])
+
+    return pointwise_loo(x, N)
+end
+
+function pointwise_loo(x::AbstractArray, N_eff::Real)
+    N = sum(length(v) for v in x)
     ll = vcat(x...)
-    N_eff = Loo.N_eff([exp.(v) for v in x])
     k, lw = log_importance_weights(ll, N_eff = N_eff)
 
     elpd = Loo.elpd(ll, lw)
     lpd = Loo.lpd(ll)
-    # var_epd_i = sum((exp.(lw) .^ 2) .* (exp.(ll) .- exp.(elpd)) .^ 2)
-    # sd_epd_i = sqrt(var_epd_i)
 
-    # println(var_epd_i)
-    # println(sd_epd_i)
-    return (elpd = elpd, lpd = lpd, looic = -2 * elpd, p_loo = lpd - elpd, k = k)
-end
+    w = lw .- StatsFuns.logsumexp(lw)
+    var_epd = sum((exp.(w) .^ 2) .* ((exp.(ll) .- exp.(elpd)) .^ 2))
+    sd_epd = sqrt(var_epd)
 
-function pointwise_loo(x::AbstractVector)
-    ll = x
-    k, lw = log_importance_weights(ll)
+    d = Distributions.Normal(exp(elpd), sd_epd)
+    elpd_var = log.(rand(d, 10000)) |> var
+    mcse_elpd = sqrt(elpd_var / (N_eff / N))
 
-    elpd = Loo.elpd(ll, lw)
-    lpd = Loo.lpd(ll)
-    var_epd_i = sum((exp.(lw) .^ 2) .* (exp.(ll) .- exp.(elpd)) .^ 2)
-    println("elpd: $elpd")
-    println("lpd: $lpd")
-    println("var_epd_i: $var_epd_i")
-    println("w: $(exp.(lw[1:5]))")
-    println("ll: $(ll[1:5])")
+    return PointwiseLoo(elpd, mcse_elpd, lpd, k)
 end
 
 function loo(m::AbstractMatrix)
-    elpd = Vector{Float64}(undef, size(m, 2))
-    lpd = Vector{Float64}(undef, size(m, 2))
+    pw = Vector{PointwiseLoo}(undef, size(m, 2))
 
     @threads for col in 1:size(m, 2)
-        _, elpd[col] = Loo.elpd(m[:, col])
-        lpd[col] = Loo.lpd(m[:, col])
+        pw[col] = pointwise_loo(m[:, col])
     end
 
-    elpd = sum(elpd)
-    lpd = sum(lpd)
-
-    return (elpd = elpd, looic = -2 * elpd, p_loo = lpd - elpd)
+    return LooResult(pw, size(m))
 end

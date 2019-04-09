@@ -53,15 +53,22 @@ end
 end
 
 @testset "pointwise_loo(::AbstractVector{<: AbstractVector})" begin
-    a = example_loglik_array()
+    Random.seed!(123)
     R_loo = CSV.read(joinpath("data", "example_loo_n_eff.csv"), allowmissing = :none)
 
+    a = example_loglik_array()
+    pw = []
     for i in 1:size(a, 3)
         pointwise = Loo.pointwise_loo([a[:, 1, i], a[:, 2, i]])
-        # @test pointwise[1] ≈ R_loo[i, 1]
-        # @test pointwise[2] ≈ R_loo[i, 4]
-        # @test pointwise[3] ≈ R_loo[i, 3]
+        push!(pw, pointwise)
     end
+
+    @test [elpd(x) for x in pw] ≈ R_loo[:elpd_loo]
+    @test [p_loo(x) for x in pw] ≈ R_loo[:p_loo]
+    @test [looic(x) for x in pw] ≈ R_loo[:looic]
+
+    mcse_elpd = CSV.read(joinpath("data", "mcse_elpd_seed_123.csv"), allowmissing = :none)
+    @test [x.mcse_elpd for x in pw] ≈ mcse_elpd[:mcse_elpd]
 end
 
 @testset "loo(::AbstractMatrix)" begin
@@ -71,6 +78,6 @@ end
     R_p_loo = 3.353629213182125
 
     julia_loo = Loo.loo(Matrix(m))
-    @test julia_loo.elpd ≈ R_elpd
-    @test julia_loo.p_loo ≈ R_p_loo
+    @test elpd(julia_loo) ≈ R_elpd
+    @test p_loo(julia_loo) ≈ R_p_loo
 end
