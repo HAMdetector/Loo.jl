@@ -22,7 +22,7 @@ function Base.show(io::IO, loo::LooResult)
         loo_print = string("LooResult(elpd=", round(elpd(loo), digits = 1),
                            ", elpd_se=", round(mcse_elpd(loo), digits = 1), ")")
         print(io, loo_print)
-        return nothing
+        return ""
     end
 
     data =  ["elpd_loo" elpd(loo) elpd_se(loo);
