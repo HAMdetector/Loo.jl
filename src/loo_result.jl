@@ -17,14 +17,7 @@ p_loo_se(loo::LooResult) = sqrt(var(p_loo.(loo.pointwise_loo)) * loo.size[2])
 mcse_elpd(loo::LooResult) = sum(x -> mcse_elpd(x) ^ 2, loo.pointwise_loo) |> sqrt
 pareto_k(loo::LooResult) = map(x -> pareto_k(x), loo.pointwise_loo)
 
-function Base.show(io::IO, loo::LooResult)
-    if get(io, :compat, true)
-        loo_print = string("LooResult(elpd=", round(elpd(loo), digits = 1),
-                           ", elpd_se=", round(mcse_elpd(loo), digits = 1), ")")
-        print(io, loo_print)
-        return ""
-    end
-
+function Base.show(io::IO, ::MIME"text/plain", loo::LooResult)
     data =  ["elpd_loo" elpd(loo) elpd_se(loo);
              "p_loo" p_loo(loo) p_loo_se(loo);
              "looic" looic(loo) looic_se(loo);]
@@ -32,7 +25,8 @@ function Base.show(io::IO, loo::LooResult)
     print(io, "\r\n")
     println(io, "Computed from a $(loo.size[1]) by $(loo.size[2]) log-likelihood matrix")
     print(io, "\r\n")
-    pretty_table(data, [" ", "Estimate", "SE"], borderless, header_crayon = crayon"reset",
+    pretty_table(io, data, [" ", "Estimate", "SE"], borderless, 
+                 header_crayon = crayon"reset",
                  formatter = ft_round(2, [2, 3]))
     print(io, "\r\n")
     print(io, "Monte Carlo SE of elpd_loo is $(round(mcse_elpd(loo), digits = 1)).")
@@ -43,10 +37,16 @@ function Base.show(io::IO, loo::LooResult)
     else
         println(io, "Pareto k diagnostic values:")
 
-        pretty_table(pareto_diagnostics(loo), ["", "", "Count", "Pct."], 
+        pretty_table(io, pareto_diagnostics(loo), ["", "", "Count", "Pct."], 
                      borderless, header_crayon = crayon"reset",
                      formatter = Dict(4 => (v, i) -> "$(round(v * 100, digits = 1))%"))
     end
+end
+
+function Base.show(io::IO, loo::LooResult)
+    loo_print = string("LooResult(elpd=", round(elpd(loo), digits = 1),
+                    ", elpd_se=", round(mcse_elpd(loo), digits = 1), ")")
+    print(io, loo_print)
 end
 
 function pareto_diagnostics(loo::LooResult)
