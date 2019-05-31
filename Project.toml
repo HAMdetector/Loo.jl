@@ -15,4 +15,10 @@ SortingAlgorithms = "a2af1166-a08f-5f64-846c-94a0d3cef48c"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
+
+[extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+StanInterface = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6"
+
+[targets]
+test = ["Test", "StanInterface"]

@@ -1,9 +1,9 @@
-using Loo, Test
+using Loo, Test, StanInterface
 import CSV, Distributions, Random
 import Statistics: mean, var
 
 function example_loglik_matrix()
-    df = CSV.read(joinpath("data", "example_loglik_matrix.csv"), header = 0)
+    df = CSV.read(joinpath(@__DIR__, "data", "example_loglik_matrix.csv"), header = 0)
 
     return Matrix(df)
 end
@@ -27,3 +27,4 @@ include("fit_pareto.jl")
 include("n_eff.jl")
 include("importance_sampling.jl")
 include("loo_result.jl")
+include("loo_posterior.jl")

@@ -1,3 +1,5 @@
+global StanInterface_loaded = true
+
 function loo(sf::StanInterface.Stanfit; log_lik_name = "log_lik")
     N = count(x -> startswith(x.first, log_lik_name * "."), sf.result[1])
     pw = Vector{PointwiseLoo}(undef, N)
