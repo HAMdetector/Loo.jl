@@ -18,8 +18,8 @@ StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 
 [extras]
 StanInterface = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "StanInterface", "Suppressor"]

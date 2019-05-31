@@ -1,4 +1,4 @@
-using Loo, Test, StanInterface
+using Loo, Test, StanInterface, Suppressor
 import CSV, Distributions, Random
 import Statistics: mean, var
 
@@ -21,6 +21,13 @@ function example_loglik_array()
     end
 
     return a
+end
+
+if !isfile(joinpath(@__DIR__, "data", "normal_model"))
+    model_path = joinpath(@__DIR__, "data", "normal_model.stan")
+    binary_path = joinpath(@__DIR__, "data", "normal_model")
+
+    @suppress StanInterface.build_binary(model_path, binary_path)
 end
 
 include("fit_pareto.jl")
