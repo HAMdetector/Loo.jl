@@ -3,8 +3,7 @@ import CSV, Distributions, Random
 import Statistics: mean, var
 
 function example_loglik_matrix()
-    df = CSV.read(joinpath("data", "example_loglik_matrix.csv"), header = 0, 
-                  allowmissing = :none)
+    df = CSV.read(joinpath("data", "example_loglik_matrix.csv"), header = 0)
 
     return Matrix(df)
 end
