@@ -17,6 +17,16 @@ p_loo_se(loo::LooResult) = sqrt(var(p_loo.(loo.pointwise_loo)) * loo.size[2])
 mcse_elpd(loo::LooResult) = sum(x -> mcse_elpd(x) ^ 2, loo.pointwise_loo) |> sqrt
 pareto_k(loo::LooResult) = map(x -> pareto_k(x), loo.pointwise_loo)
 
+function compare(loo_1::LooResult, loo_2::LooResult)
+    elpd_1 = elpd.(loo_1.pointwise_loo)
+    elpd_2 = elpd.(loo_2.pointwise_loo)
+
+    elpd_diff = elpd_1 .- elpd_2
+    elpd_diff_se = std(elpd_diff) / sqrt(length(elpd_diff))
+
+    return "$(sum(elpd_diff)) +- $elpd_diff_se"
+end
+
 function Base.show(io::IO, ::MIME"text/plain", loo::LooResult)
     data =  ["elpd_loo" elpd(loo) elpd_se(loo);
              "p_loo" p_loo(loo) p_loo_se(loo);

@@ -1,28 +1,32 @@
-@testset "loo_posterior(::Stanfit, ::Int)" begin
-    function quantile_interval(x::Vector; q::Real = 0.95)
-        sorted = sort(x)
-        lower_idx = round(Int, ((1 - q) / 2) * length(x))
-        upper_idx = round(Int, (1 - ((1 - q) / 2)) * length(x))
+@testset "loo_posterior_indices(::AbstractVector{T}) where T <: Real" begin
+    # loo posteriors are checked with a beta bernoulli model.
+    # If the likelihood function is y ~ bernoulli(theta), and the prior on theta is
+    # theta ~ beta(1, 1); (uniform), then with y = [0, 0, 1, 1], the full posterior on theta
+    # should be theta ~ beta(3, 3). If the first or data point is left out, the loo posterior
+    # should be theta ~ beta(3, 2), if the third or foruth data point is left out, the loo posterior
+    # should be theta ~ beta(2, 3).
 
-        lower = sorted[lower_idx]
-        upper = sorted[upper_idx]
-
-        return (lower, upper)
-    end
-
-    function interval_width(interval::Tuple{Float64, Float64})
-        return interval[2] - interval[1]
-    end
-
-    sf = @suppress stan(joinpath(@__DIR__, "data", "normal_model"), 
-                        Dict("y" => Random.randn(1000)), chains = 1, iter = 5000)
-    @test sf isa StanInterface.Stanfit
-
+    stan_input = Dict("N" => 4, "y" => [0, 0, 1, 1])
+    sf = @suppress stan(joinpath(@__DIR__, "data", "beta_bernoulli_model"), stan_input,
+        iter = 40000, chains = 1)
     posterior = extract(sf)
-    posterior_interval = quantile_interval(posterior["mu"])
 
-    loo_posterior = Loo.loo_posterior(sf, 1)
-    loo_interval = quantile_interval(loo_posterior["mu"])
+    # full posterior
+    ht = @suppress ApproximateTwoSampleKSTest(posterior["theta"], 
+        rand(Distributions.Beta(3, 3), 40000))
+        
+    @test pvalue(ht) > 0.00001
 
-    @test interval_width(posterior_interval) < interval_width(loo_interval)
+    expected_distribution = [Distributions.Beta(3, 2), Distributions.Beta(3, 2),
+        Distributions.Beta(2, 3), Distributions.Beta(2, 3)]
+
+    for i in 1:4
+        ll = posterior["log_lik.$i"]
+        indices = Loo.loo_posterior_indices(ll)
+        loo_posterior = posterior["theta"][indices]
+        ht = @suppress ApproximateTwoSampleKSTest(loo_posterior, 
+            rand(expected_distribution[i], 40000))
+
+        @test pvalue(ht) > 0.000001
+    end
 end

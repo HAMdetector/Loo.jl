@@ -1,4 +1,4 @@
-using Loo, Test, StanInterface, Suppressor
+using Loo, Test, StanInterface, Suppressor, HypothesisTests
 import CSV, Distributions, Random
 import Statistics: mean, var
 
@@ -30,8 +30,8 @@ if !isfile(joinpath(@__DIR__, "data", "normal_model"))
     @suppress StanInterface.build_binary(model_path, binary_path)
 end
 
-include("fit_pareto.jl")
-include("n_eff.jl")
-include("importance_sampling.jl")
-include("loo_result.jl")
+# include("fit_pareto.jl")
+# include("n_eff.jl")
+# include("importance_sampling.jl")
+# include("loo_result.jl")
 include("loo_posterior.jl")
