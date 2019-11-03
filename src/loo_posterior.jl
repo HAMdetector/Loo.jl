@@ -1,4 +1,4 @@
-    function loo_posterior(sf::StanInterface.Stanfit, i::Int; log_lik_name::String = "log_lik")
+function loo_posterior(sf::StanInterface.Stanfit, i::Int; log_lik_name::String = "log_lik")
     posterior = StanInterface.extract(sf)
     ll = posterior[log_lik_name * ".$i"]
     k, lw = log_importance_weights!(ll)
