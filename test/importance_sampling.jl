@@ -58,12 +58,12 @@ end
         push!(pw, pointwise)
     end
 
-    @test [elpd(x) for x in pw] ≈ R_loo[:elpd_loo]
-    @test [p_loo(x) for x in pw] ≈ R_loo[:p_loo]
-    @test [looic(x) for x in pw] ≈ R_loo[:looic]
+    @test [elpd(x) for x in pw] ≈ R_loo[!, :elpd_loo]
+    @test [p_loo(x) for x in pw] ≈ R_loo[!, :p_loo]
+    @test [looic(x) for x in pw] ≈ R_loo[!, :looic]
 
     mcse_elpd = CSV.read(joinpath(@__DIR__, "data", "mcse_elpd_seed_123.csv"))
-    @test [x.mcse_elpd for x in pw] ≈ mcse_elpd[:mcse_elpd]
+    @test [x.mcse_elpd for x in pw] ≈ mcse_elpd[!, :mcse_elpd]
 end
 
 @testset "loo(::AbstractMatrix)" begin
