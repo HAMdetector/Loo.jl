@@ -7,4 +7,10 @@
         @test fit.σ ≈ R_pareto_fit[i, :sigma]
         @test fit.ξ ≈ R_pareto_fit[i, :k]
     end
+    
+    rloo_gpdfit_x = CSV.read(joinpath(@__DIR__, "data", "rloo_gpdfit_x.csv"))[!, :x]
+    fit = Loo.fit(Distributions.GeneralizedPareto, rloo_gpdfit_x)
+
+    @test round(fit.ξ, digits = 8) ≈ 0.07036688
+    @test round(fit.σ, digits = 6) ≈ 1.018298
 end
