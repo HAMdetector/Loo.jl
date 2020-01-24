@@ -1,5 +1,6 @@
 data {
-    real y[1000];
+    int N;
+    real y[N];
 }
 
 parameters {
@@ -15,8 +16,8 @@ model {
 }
 
 generated quantities {
-    real log_lik[1000];
+    real log_lik[N];
 
-    for (i in 1:1000)
+    for (i in 1:N)
         log_lik[i] = normal_lpdf(y[i] | mu, sigma);
 }

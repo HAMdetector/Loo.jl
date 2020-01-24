@@ -68,7 +68,7 @@ function pointwise_loo(x::AbstractArray, N_eff::Real)
     sd_epd = sqrt(var_epd)
 
     d = Distributions.Normal(exp(elpd), sd_epd)
-    elpd_var = log.(rand(d, 10000)) |> var
+    elpd_var = log.(filter(x -> x > 0, rand(d, 10000))) |> var
     mcse_elpd = sqrt(elpd_var / (N_eff / N))
 
     return PointwiseLoo(elpd, mcse_elpd, lpd, k)
