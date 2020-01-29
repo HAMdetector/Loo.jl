@@ -2,7 +2,8 @@ module Loo
 
 export elpd, lpd, looic, p_loo, elpd_se, looic_se, p_loo_se, mcse_elpd, pareto_k, loo
 
-using Statistics, LinearAlgebra, Base.Threads, StatsBase, Requires, PrettyTables, StanInterface
+using Statistics, LinearAlgebra, Base.Threads, StatsBase, Requires, PrettyTables,
+    StanInterface, Base.Threads
 import Distributions, SortingAlgorithms, StatsFuns
 import Base.show
 
