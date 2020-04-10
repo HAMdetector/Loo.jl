@@ -13,7 +13,7 @@ function fit(::Type{Distributions.GeneralizedPareto}, x::AbstractVector{T};
     aux2 = Vector{Float64}(undef, m)
 
     @inbounds for j in 1:m
-        θ[j] = 1 / x[n] + (1 - sqrt(m / (j - 0.5))) / (3x_star)
+        θ[j] = 1 / x[n] + (1 - sqrt(m / (j - 0.5))) / (3 * x_star)
     end
 
     @inbounds for i in 1:m

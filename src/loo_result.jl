@@ -22,9 +22,9 @@ function compare(loo_1::LooResult, loo_2::LooResult)
     elpd_2 = elpd.(loo_2.pointwise_loo)
 
     elpd_diff = elpd_1 .- elpd_2
-    elpd_diff_se = std(elpd_diff) / sqrt(length(elpd_diff))
+    elpd_diff_se = std(elpd_diff) * sqrt(length(elpd_diff))
 
-    return "$(sum(elpd_diff)) +- $elpd_diff_se"
+    return (elpd_diff = sum(elpd_diff), se_diff = elpd_diff_se)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", loo::LooResult)

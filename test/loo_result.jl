@@ -19,3 +19,14 @@
     @test loo_result isa Loo.LooResult
     @test pareto_k(loo_result)[1] > 1
 end
+
+@testset "loo_compare(::LooResult, ::LooResult)" begin
+    m = example_loglik_matrix()
+    loo_1 = Loo.loo(m)
+    loo_2 = Loo.loo(m .+ rand(Random.seed!(123), 1000, 32))
+
+    diff = Loo.compare(loo_1, loo_2)
+    @test diff.elpd_diff ≈ -14.65635576411212
+    @test diff.se_diff ≈ 0.06088157543557993
+
+end
