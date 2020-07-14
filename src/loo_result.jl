@@ -37,7 +37,7 @@ function Base.show(io::IO, ::MIME"text/plain", loo::LooResult)
     print(io, "\r\n")
     pretty_table(io, data, [" ", "Estimate", "SE"], tf = borderless, 
                  header_crayon = crayon"reset",
-                 formatter = ft_round(2, [2, 3]))
+                 formatters = ft_round(2, [2, 3]))
     print(io, "\r\n")
     print(io, "Monte Carlo SE of elpd_loo is $(round(mcse_elpd(loo), digits = 1)).")
     println(io, "\r\n")
@@ -49,7 +49,7 @@ function Base.show(io::IO, ::MIME"text/plain", loo::LooResult)
 
         pretty_table(io, pareto_diagnostics(loo), ["", "", "Count", "Pct."], 
                      tf = borderless, header_crayon = crayon"reset",
-                     formatter = Dict(4 => (v, i) -> "$(round(v * 100, digits = 1))%"))
+                     formatters = ((v, i, j) -> j == 4 ? "$(round(v * 100, digits = 1))%" : v))
     end
 end
 
