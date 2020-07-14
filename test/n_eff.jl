@@ -38,7 +38,9 @@ end
 end
 
 @testset "r_eff calculations" begin
-    r_effs = CSV.read(joinpath(@__DIR__, "data", "example_r_effs.csv"))[!, :r_effs]
+    r_effs = DataFrame!(
+        CSV.File(joinpath(@__DIR__, "data", "example_r_effs.csv"))
+    )[!, :r_effs]
     a = example_loglik_array()
 
     for i in 1:size(a, 3)
