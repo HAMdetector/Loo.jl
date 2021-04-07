@@ -7,7 +7,7 @@
     # should be theta ~ beta(2, 3).
 
     stan_input = Dict("N" => 4, "y" => [0, 0, 1, 1])
-    sf = @suppress stan(joinpath(@__DIR__, "data", "beta_bernoulli_model"), stan_input,
+    sf = @suppress stan(joinpath(@__DIR__, "data", "beta_bernoulli_model.stan"), stan_input,
         iter = 40000, chains = 1)
     posterior = extract(sf)
 
