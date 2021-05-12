@@ -1,11 +1,11 @@
 using Loo, Test, StanInterface, Suppressor, HypothesisTests
 import CSV, Distributions, Random
-import DataFrames: DataFrame!
+import DataFrames: DataFrame
 import Statistics: mean, var
 
 function example_loglik_matrix()
     df = CSV.File(joinpath(@__DIR__, "data", "example_loglik_matrix.csv"), header = 0) |>  
-        DataFrame!
+        DataFrame
 
     return Matrix(df)
 end

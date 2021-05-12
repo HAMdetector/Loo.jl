@@ -1,8 +1,8 @@
 @testset "fit(::GeneralizedPareto, x::Vector{<:Real})" begin
     m = CSV.File(joinpath(@__DIR__, "data", "example_loglik_matrix.csv"), header = 0) |>
-        DataFrame!
+        DataFrame
     R_pareto_fit = CSV.File(joinpath(@__DIR__, "data", "example_pareto_fit.csv")) |>
-        DataFrame!
+        DataFrame
 
     for i in 1:size(m, 2)
         fit = Loo.fit(Distributions.GeneralizedPareto, exp.(m[:, i]))
@@ -10,7 +10,7 @@
         @test fit.ξ ≈ R_pareto_fit[i, :k]
     end
     
-    rloo_gpdfit_x = DataFrame!(
+    rloo_gpdfit_x = DataFrame(
         CSV.File(joinpath(@__DIR__, "data", "rloo_gpdfit_x.csv"))
     )[!, :x]
     

@@ -3,7 +3,7 @@
     # If the likelihood function is y ~ bernoulli(theta), and the prior on theta is
     # theta ~ beta(1, 1); (uniform), then with y = [0, 0, 1, 1], the full posterior on theta
     # should be theta ~ beta(3, 3). If the first or data point is left out, the loo posterior
-    # should be theta ~ beta(3, 2), if the third or foruth data point is left out, the loo posterior
+    # should be theta ~ beta(3, 2), if the third or fourth data point is left out, the loo posterior
     # should be theta ~ beta(2, 3).
 
     stan_input = Dict("N" => 4, "y" => [0, 0, 1, 1])
