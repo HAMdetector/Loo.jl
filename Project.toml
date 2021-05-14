@@ -1,6 +1,6 @@
 name = "Loo"
 uuid = "17760cec-3789-11e9-196f-659854311368"
-authors = ["Daniel Habermann <daniel.habermann@uni-due.de>"]
+authors = ["Daniel Habermann <10801656+HAMdetector@users.noreply.github.com>"]
 version = "0.1.0"
 
 [deps]
