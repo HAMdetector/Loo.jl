@@ -1,9 +1,9 @@
 # Loo.jl
 
-Julia implementation of Pareto-smoothed leave-one-out cross-validation, akin to R's loo package.
+Julia implementation of Pareto-smoothed leave-one-out cross-validation 
+(doi: 10.1007/s11222-016-9696-4). Intended to be just used as a dependency for HAMdetector. 
 
 ## Installation
 
-1. clone the repository to the same location as the `StanInterface` package.
-2. start julia, `activate` the Loo package, run `instantiate` (all in Pkg mode).
-3. hopefully `test` should run without any problems.
+1. Start julia, switch into Pkg mode by typing `]`, run `add https://github.com/HAMdetector/Loo.jl.git`
+2. run `test` in Pkg mode to run unit tests.
