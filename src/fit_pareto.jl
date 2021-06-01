@@ -33,7 +33,11 @@ function fit(::Type{Distributions.GeneralizedPareto}, x::AbstractVector{T};
 
     ξ = mean(aux1)
     σ = -ξ / θ_hat
-    ξ = (ξ * n + 5 ) / (n + 10)
+    ξ = (ξ * n + 5) / (n + 10)
+
+    !isnan(σ) || error("Largest log-likelihoods are identical." *
+        " This hints at possible issues with numerical over/underflow," *
+        " e.g. in logistic regression models if logistic(theta) === 1.")
 
     return Distributions.GeneralizedPareto(σ, ξ)
 end

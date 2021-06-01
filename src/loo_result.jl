@@ -35,7 +35,7 @@ function Base.show(io::IO, ::MIME"text/plain", loo::LooResult)
     print(io, "\r\n")
     println(io, "Computed from a $(loo.size[1]) by $(loo.size[2]) log-likelihood matrix")
     print(io, "\r\n")
-    pretty_table(io, data, [" ", "Estimate", "SE"], tf = borderless, 
+    pretty_table(io, data, [" ", "Estimate", "SE"], tf = tf_borderless, 
                  header_crayon = crayon"reset",
                  formatters = ft_round(2, [2, 3]))
     print(io, "\r\n")
@@ -48,7 +48,7 @@ function Base.show(io::IO, ::MIME"text/plain", loo::LooResult)
         println(io, "Pareto k diagnostic values:")
 
         pretty_table(io, pareto_diagnostics(loo), ["", "", "Count", "Pct."], 
-                     tf = borderless, header_crayon = crayon"reset",
+                     tf = tf_borderless, header_crayon = crayon"reset",
                      formatters = ((v, i, j) -> j == 4 ? "$(round(v * 100, digits = 1))%" : v))
     end
 end
