@@ -24,8 +24,6 @@ version = "0.10.9"
 [[CmdStanBinaries_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "2103f3355ccca1eefdcec056d084f7ba4d43a459"
-repo-rev = "v0.2.0"
-repo-url = "https://github.com/HAMdetector/CmdStanBinaries_jll.jl.git"
 uuid = "eecc378a-c28e-5a81-8849-a983a4161162"
 version = "0.1.0+0"
 
@@ -331,11 +329,11 @@ version = "1.5.1"
 
 [[StanInterface]]
 deps = ["CSV", "CmdStanBinaries_jll", "DelimitedFiles", "Distributed", "Distributions", "Mmap", "Random", "SharedArrays", "Statistics", "StatsBase", "Suppressor", "Test"]
-git-tree-sha1 = "3151b05d3f3e2d735d228d283ab9ad5b33ddd9d3"
-repo-rev = "v.0.2.0"
-repo-url = "https://github.com/HAMdetector/StanInterface.jl.git"
+git-tree-sha1 = "b0d8b875422e753650ade62de299eeecb24120d0"
+repo-rev = "master"
+repo-url = "../StanInterface"
 uuid = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6"
-version = "0.1.0"
+version = "0.2.0"
 
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
