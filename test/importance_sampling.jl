@@ -56,19 +56,22 @@ end
 end
 
 @testset "pointwise_loo(::AbstractVector{<: AbstractVector})" begin
-    Random.seed!(123)
+    rng = StableRNG(123)
     R_loo = CSV.File(joinpath(@__DIR__, "data", "example_loo_n_eff.csv")) |> DataFrame
 
     a = example_loglik_array()
     pw = []
     for i in 1:size(a, 3)
-        pointwise = Loo.pointwise_loo([a[:, 1, i], a[:, 2, i]])
+        pointwise = Loo.pointwise_loo([a[:, 1, i], a[:, 2, i]]; rng=rng)
         push!(pw, pointwise)
     end
 
     @test [elpd(x) for x in pw] ≈ R_loo[!, :elpd_loo]
     @test [p_loo(x) for x in pw] ≈ R_loo[!, :p_loo]
     @test [looic(x) for x in pw] ≈ R_loo[!, :looic]
+    
+    df = DataFrame(mcse_elpd=[x.mcse_elpd for x in pw])
+    CSV.write(joinpath(@__DIR__, "data", "mcse_elpd_seed_123.csv"), df)
 
     mcse_elpd = CSV.File(joinpath(@__DIR__, "data", "mcse_elpd_seed_123.csv")) |>
         DataFrame

@@ -1,12 +1,21 @@
-global StanInterface_loaded = true
-
-function loo(sf::StanInterface.Stanfit; log_lik_name = "log_lik")
-    N = count(x -> startswith(x.first, log_lik_name * "."), sf.result[1])
+function loo(
+        sf::StanInterface.Stanfit; 
+        log_lik_name = "log_lik", 
+        rng::Random.AbstractRNG = Random.default_rng()
+)
+    parameters = keys(StanInterface.extract(sf))
+    N = count(x -> startswith(x, log_lik_name * "."), parameters)
     pw = Vector{PointwiseLoo}(undef, N)
 
-    @threads for i in 1:N
-        pw[i] = pointwise_loo([x[string(log_lik_name, ".", i)] for x in sf.result])
-    end
+    f = x -> Dict((string(p[1]), collect(skipmissing(p[2]))) for p in pairs(x))
+    results = [CSV.read(codeunits(x), comment = "#", f) for x in sf.results]
 
-    return LooResult(pw, (sf.chains * sf.iter, N))
+    @threads for i in 1:N
+        pw[i] = pointwise_loo([res[string(log_lik_name, ".", i)] for res in results]; rng=rng)
+    end
+    
+    chains = length(results)
+    iter = length(results[1]["lp__"])
+
+    return LooResult(pw, (chains * iter, N))
 end

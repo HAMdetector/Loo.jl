@@ -24,17 +24,17 @@ end
 end
 
 @testset "N_eff(::AbstractVector{AbstractVector{<: Real}})" begin
-    Random.seed!(1234)
+    rng = StableRNG(1234)
 
     x = Vector{Vector{Float64}}()
     for c in 1:4
         push!(x, Float64[])
         for i in 1:100
-            push!(x[c], rand(Distributions.Normal(0.01 * i, 1)))
+            push!(x[c], rand(rng, Distributions.Normal(0.01 * i, 1)))
         end
     end
 
-    @test Loo.N_eff(x) ≈ 233.87364356034098
+    @test Loo.N_eff(x) ≈ 204.53432331826636
 end
 
 @testset "r_eff calculations" begin

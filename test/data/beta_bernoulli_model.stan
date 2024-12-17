@@ -1,6 +1,6 @@
 data {
     int<lower=0> N;
-    int<lower=0, upper=1> y[N];
+    array[N] int<lower=0, upper=1> y;
 }
 
 parameters {
@@ -13,7 +13,7 @@ model {
 }
 
 generated quantities {
-    real log_lik[N];
+    array[N] real log_lik;
 
     for (i in 1:N){
         log_lik[i] = bernoulli_lpmf(y[i] | theta);     

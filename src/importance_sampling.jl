@@ -45,17 +45,17 @@ function lpd(log_lik::AbstractVector{T}) where T <: Real
     return StatsFuns.logsumexp(log_lik) - log(length(log_lik))
 end
 
-function pointwise_loo(x::AbstractVector{<:Real})
-    return pointwise_loo(x, sum(length(v) for v in x))
+function pointwise_loo(x::AbstractVector{<:Real}; rng::Random.AbstractRNG = Random.defualt_rng())
+    return pointwise_loo(x, sum(length(v) for v in x); rng=rng)
 end
 
-function pointwise_loo(x::AbstractArray{<: AbstractVector})
+function pointwise_loo(x::AbstractArray{<: AbstractVector}; rng::Random.AbstractRNG = Random.default_rng())
     N = N_eff([exp.(v) for v in x])
 
-    return pointwise_loo(x, N)
+    return pointwise_loo(x, N; rng=rng)
 end
 
-function pointwise_loo(x::AbstractArray, N_eff::Real)
+function pointwise_loo(x::AbstractArray, N_eff::Real; rng::Random.AbstractRNG = Random.default_rng())
     N = sum(length(v) for v in x)
     ll = vcat(x...)
     k, lw = log_importance_weights(ll, N_eff = N_eff)
@@ -68,17 +68,17 @@ function pointwise_loo(x::AbstractArray, N_eff::Real)
     sd_epd = sqrt(var_epd)
 
     d = Distributions.Normal(exp(elpd), sd_epd)
-    elpd_var = log.(filter(x -> x > 0, rand(d, 10000))) |> var
+    elpd_var = log.(filter(x -> x > 0, rand(rng, d, 10000))) |> var
     mcse_elpd = sqrt(elpd_var / (N_eff / N))
 
     return PointwiseLoo(elpd, mcse_elpd, lpd, k)
 end
 
-function loo(m::AbstractMatrix)
+function loo(m::AbstractMatrix; rng::Random.AbstractRNG = Random.default_rng())
     pw = Vector{PointwiseLoo}(undef, size(m, 2))
 
     @threads for col in 1:size(m, 2)
-        pw[col] = pointwise_loo(m[:, col])
+        pw[col] = pointwise_loo(m[:, col]; rng=rng)
     end
 
     return LooResult(pw, size(m))
