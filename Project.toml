@@ -1,7 +1,7 @@
 name = "Loo"
 uuid = "17760cec-3789-11e9-196f-659854311368"
 authors = ["Daniel Habermann <10801656+HAMdetector@users.noreply.github.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
